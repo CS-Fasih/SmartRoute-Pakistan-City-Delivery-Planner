@@ -201,21 +201,28 @@ class SmartRouteApp(ctk.CTk):
         self.run_button = ctk.CTkButton(
             btn_frame, text="Run GA",
             fg_color="#27ae60", hover_color="#1e8449",
-            command=self._on_run, width=80
+            command=self._on_run, width=70
         )
-        self.run_button.pack(side="left", padx=2)
+        self.run_button.pack(side="left", padx=1)
 
         self.stop_button = ctk.CTkButton(
             btn_frame, text="Stop",
             fg_color="#e74c3c", hover_color="#c0392b",
-            command=self._on_stop, width=80, state="disabled"
+            command=self._on_stop, width=70, state="disabled"
         )
-        self.stop_button.pack(side="left", padx=2)
+        self.stop_button.pack(side="left", padx=1)
+
+        self.restart_button = ctk.CTkButton(
+            btn_frame, text="Restart",
+            fg_color="#f39c12", hover_color="#d68910",
+            command=self._on_restart, width=70,
+        )
+        self.restart_button.pack(side="left", padx=1)
 
         ctk.CTkButton(
             btn_frame, text="Reset",
-            command=self._on_reset, width=80
-        ).pack(side="left", padx=2)
+            command=self._on_reset, width=70
+        ).pack(side="left", padx=1)
 
         # ── Live Stats ──
         ctk.CTkLabel(
@@ -415,6 +422,27 @@ class SmartRouteApp(ctk.CTk):
         self.gen_slider.configure(state="normal")
         self.mut_slider.configure(state="normal")
         self.status_label.configure(text="Stopped by user.", text_color="#e67e22")
+
+    def _on_restart(self):
+        self._on_stop()
+        self.fitness_history.clear()
+        self.progress_bar.set(0.0)
+        self.progress_pct_label.configure(text="0%")
+        self.gen_label.configure(text="Generation: --")
+        self.best_dist_label.configure(text="Best Distance: -- km")
+        self.naive_dist_label.configure(text="Naive Distance: -- km")
+        self.improvement_label.configure(text="Improvement: --%")
+        if hasattr(self, '_naive_distance'):
+            del self._naive_distance
+        self.route_textbox.configure(state="normal")
+        self.route_textbox.delete("1.0", "end")
+        self.route_textbox.configure(state="disabled")
+        self._draw_empty_graph()
+        self.map_renderer.update(self.selected_cities, [])
+        self.status_label.configure(
+            text="Restarted. Click Run GA to optimize again.",
+            text_color="white"
+        )
 
     def _on_reset(self):
         self._on_stop()
