@@ -1,0 +1,5 @@
+customtkinter==5.2.2
+matplotlib==3.8.4
+numpy==1.26.4
+deap==1.4.1
+Pillow==10.3.0
